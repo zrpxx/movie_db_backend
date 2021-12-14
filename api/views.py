@@ -4,18 +4,63 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets
-from .models import Movie, Comment, User
-from .serializers import MovieSerializer, CommentSerializer
+from .models import Movie, Comment, User, Category, Person
+from .serializers import MovieSerializer, CommentSerializer, PersonSerializer, CategorySerializer
 
 
 class MovieViewSet(viewsets.ModelViewSet):
     serializer_class = MovieSerializer
     queryset = Movie.objects.all()
 
+    def get_queryset(self):
+        queryset = Movie.objects.all()
+        movie_id = self.request.query_params.get('id', None)
+        if movie_id is not None:
+            queryset = queryset.filter(id=movie_id)
+        return queryset
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
+
+    def get_queryset(self):
+        movie_id = self.request.query_params.get('movie_id', None)
+        if movie_id is not None:
+            movie = MovieViewSet.queryset.filter(id=movie_id).first()
+            if movie is not None:
+                queryset = Comment.objects.filter(movie_id=movie)
+            else:
+                raise Exception('Movie not found')
+        else:
+            queryset = Comment.objects.all()
+        return queryset
+
+
+
+class PersonViewSet(viewsets.ModelViewSet):
+    serializer_class = PersonSerializer
+    queryset = Person.objects.all()
+
+    def get_queryset(self):
+        queryset = Person.objects.all()
+        person_id = self.request.query_params.get('id', None)
+        if person_id is not None:
+            queryset = queryset.filter(id=person_id)
+        return queryset
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
+
+    def get_queryset(self):
+        category = self.request.query_params.get('category', None)
+        if category is not None:
+            queryset = Category.objects.filter(category=category)
+        else:
+            queryset = Category.objects.all()
+        return queryset
 
 
 @csrf_exempt

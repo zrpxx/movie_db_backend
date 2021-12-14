@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
@@ -6,7 +7,7 @@ class User(models.Model):
     id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=50)
     password = models.CharField(max_length=50)
-    email = models.CharField(max_length=50)
+    email = models.CharField(max_length=50, null=True)
     role = models.CharField(max_length=50, default='user')
 
 
@@ -27,9 +28,10 @@ class Movie(models.Model):
 class Comment(models.Model):
     id = models.AutoField(primary_key=True)
     content = models.CharField(max_length=500)
-    score = models.FloatField(default=-1)
-    nickname = models.CharField(max_length=50, default='N/A')
-    status = models.CharField(max_length=50, default='N/A')
+    score = models.FloatField(
+        default=-1,
+        validators=[MaxValueValidator(5), MinValueValidator(1)]
+    )
     date = models.DateTimeField(auto_now_add=True)
     movie_id = models.ForeignKey(Movie, on_delete=models.CASCADE)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
