@@ -19,6 +19,38 @@ class MovieViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(id=movie_id)
         return queryset
 
+    def create(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        serializer = MovieSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return HttpResponse(status=201)
+        else:
+            raise Exception(serializer.errors)
+
+    def put(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        movie_id = self.request.query_params.get('id', None)
+        if movie_id is not None:
+            movie = Movie.objects.get(id=movie_id)
+            serializer = MovieSerializer(movie, data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return HttpResponse(status=200)
+            else:
+                raise Exception(serializer.errors)
+        else:
+            raise Exception('Movie id is required')
+
+    def delete(self, request, *args, **kwargs):
+        movie_id = self.request.query_params.get('id', None)
+        if movie_id is not None:
+            movie = Movie.objects.get(id=movie_id)
+            movie.delete()
+            return HttpResponse(status=200)
+        else:
+            raise Exception('Movie id is required')
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
@@ -36,6 +68,37 @@ class CommentViewSet(viewsets.ModelViewSet):
             queryset = Comment.objects.all()
         return queryset
 
+    def create(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        serializer = CommentSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return HttpResponse(status=201)
+        else:
+            raise Exception(serializer.errors)
+
+    def put(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        comment_id = self.request.query_params.get('id', None)
+        if comment_id is not None:
+            comment = Comment.objects.get(id=comment_id)
+            serializer = CommentSerializer(comment, data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return HttpResponse(status=200)
+            else:
+                raise Exception(serializer.errors)
+        else:
+            raise Exception('Comment id is required')
+
+    def delete(self, request, *args, **kwargs):
+        comment_id = self.request.query_params.get('id', None)
+        if comment_id is not None:
+            comment = Comment.objects.get(id=comment_id)
+            comment.delete()
+            return HttpResponse(status=200)
+        else:
+            raise Exception('Comment id is required')
 
 
 class PersonViewSet(viewsets.ModelViewSet):
@@ -49,6 +112,38 @@ class PersonViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(id=person_id)
         return queryset
 
+    def create(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        serializer = PersonSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return HttpResponse(status=201)
+        else:
+            raise Exception(serializer.errors)
+
+    def put(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        person_id = self.request.query_params.get('id', None)
+        if person_id is not None:
+            person = Person.objects.get(id=person_id)
+            serializer = PersonSerializer(person, data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return HttpResponse(status=200)
+            else:
+                raise Exception(serializer.errors)
+        else:
+            raise Exception('Person id is required')
+
+    def delete(self, request, *args, **kwargs):
+        person_id = self.request.query_params.get('id', None)
+        if person_id is not None:
+            person = Person.objects.get(id=person_id)
+            person.delete()
+            return HttpResponse(status=200)
+        else:
+            raise Exception('Person id is required')
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
@@ -61,6 +156,38 @@ class CategoryViewSet(viewsets.ModelViewSet):
         else:
             queryset = Category.objects.all()
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        serializer = CategorySerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return HttpResponse(status=201)
+        else:
+            raise Exception(serializer.errors)
+
+    def put(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+        category = self.request.query_params.get('category', None)
+        if category is not None:
+            category = Category.objects.get(category=category)
+            serializer = CategorySerializer(category, data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return HttpResponse(status=200)
+            else:
+                raise Exception(serializer.errors)
+        else:
+            raise Exception('Category is required')
+
+    def delete(self, request, *args, **kwargs):
+        category = self.request.query_params.get('category', None)
+        if category is not None:
+            category = Category.objects.get(category=category)
+            category.delete()
+            return HttpResponse(status=200)
+        else:
+            raise Exception('Category is required')
 
 
 @csrf_exempt
