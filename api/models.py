@@ -11,6 +11,16 @@ class User(models.Model):
     role = models.CharField(max_length=50, default='user')
 
 
+class Person(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=50)
+    gender = models.CharField(max_length=10)
+    birth = models.CharField(max_length=50)
+    tmdb_id = models.BigIntegerField()
+    biography = models.CharField(max_length=5000, default='N/A')
+    place_birth = models.CharField(max_length=500, default='N/A')
+
+
 class Movie(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=200)
@@ -23,6 +33,8 @@ class Movie(models.Model):
     status = models.CharField(max_length=50, default='N/A')
     budget = models.IntegerField(default=-1)
     revenue = models.IntegerField(default=-1)
+    actors = models.ManyToManyField(Person, through='ActorMovie', related_name='actors')
+    directors = models.ManyToManyField(Person, through='DirectorMovie', related_name='directors')
 
 
 class Comment(models.Model):
@@ -49,25 +61,15 @@ class MovieCategory(models.Model):
     category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
 
 
-class Person(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50)
-    gender = models.CharField(max_length=10)
-    birth = models.CharField(max_length=50)
-    tmdb_id = models.BigIntegerField()
-    biography = models.CharField(max_length=5000, default='N/A')
-    place_birth = models.CharField(max_length=500, default='N/A')
-
-
 class ActorMovie(models.Model):
     id = models.AutoField(primary_key=True)
     movie_id = models.ForeignKey(Movie, on_delete=models.CASCADE)
-    person_id = models.ForeignKey(Person, on_delete=models.CASCADE)
+    person_id = models.ForeignKey(Person, on_delete=models.CASCADE, related_name='actor')
     role = models.CharField(max_length=50, default='Starred')
 
 
 class DirectorMovie(models.Model):
     id = models.AutoField(primary_key=True)
     movie_id = models.ForeignKey(Movie, on_delete=models.CASCADE)
-    person_id = models.ForeignKey(Person, on_delete=models.CASCADE)
+    person_id = models.ForeignKey(Person, on_delete=models.CASCADE, related_name='director')
     role = models.CharField(max_length=50, default='Director')

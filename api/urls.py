@@ -8,9 +8,9 @@ urlpatterns = [
 ]
 
 router = DefaultRouter()
-router.register(r'movies', views.MovieViewSet, basename='movies')
-router.register(r'comments', views.CommentViewSet, basename='comments')
+router.register(r'movies', views.MovieViewSet, basename='Movies')
+router.register(r'comments', views.CommentViewSet, basename='Comments')
 router.register(r'persons', views.PersonViewSet, basename='Persons')
-router.register(r'categories', views.CategoryViewSet, basename='Genres')
+router.register(r'categories', views.CategoryViewSet, basename='Categories')
 
 urlpatterns += router.urls
