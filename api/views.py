@@ -6,7 +6,7 @@ from rest_framework import viewsets
 from rest_framework.filters import SearchFilter
 
 from .models import Movie, Comment, User, Person, MovieCategory, Category
-from .serializers import MovieSerializer, MovieCategorySerializer, CommentSerializer, PersonSerializer, \
+from .serializers import MovieSerializer, CommentSerializer, PersonSerializer, \
                             CategorySerializer, ActorMovie, DirectorMovie
 
 
@@ -19,6 +19,9 @@ class MovieViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Movie.objects.all()
+        queryset = queryset.prefetch_related('actors')
+        queryset = queryset.prefetch_related('directors')
+        queryset = queryset.prefetch_related('categories')
         movie_id = self.request.query_params.get('id', None)
         if movie_id is not None:
             queryset = queryset.filter(id=movie_id)
