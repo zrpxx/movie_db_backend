@@ -3,6 +3,8 @@ import json
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets
+from rest_framework.filters import SearchFilter
+
 from .models import Movie, Comment, User, Person, MovieCategory, Category
 from .serializers import MovieSerializer, MovieCategorySerializer, CommentSerializer, PersonSerializer, \
                             CategorySerializer, ActorMovie, DirectorMovie
@@ -11,6 +13,9 @@ from .serializers import MovieSerializer, MovieCategorySerializer, CommentSerial
 class MovieViewSet(viewsets.ModelViewSet):
     serializer_class = MovieSerializer
     queryset = Movie.objects.all()
+
+    filter_backends = [SearchFilter]
+    search_fields = ['title']
 
     def get_queryset(self):
         queryset = Movie.objects.all()
