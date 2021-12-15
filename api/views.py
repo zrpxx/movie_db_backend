@@ -1,11 +1,10 @@
 import json
 
 from django.http import HttpResponse
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets
 from .models import Movie, Comment, User, Category, Person
-from .serializers import MovieSerializer, CommentSerializer, PersonSerializer, CategorySerializer
+from .serializers import MovieSerializer, CommentSerializer, PersonSerializer, CategorySerializer, ActorMovie, Category, DirectorMovie
 
 
 class MovieViewSet(viewsets.ModelViewSet):
@@ -21,9 +20,43 @@ class MovieViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         data = json.loads(request.body)
+        actors = data.get('actors', None)
+        directors = data.get('directors', None)
+        categories = data.get('categories', None)
+
         serializer = MovieSerializer(data=data)
+
         if serializer.is_valid():
-            serializer.save()
+            movie = serializer.save()
+            if actors is not None:
+                data['actors'] = actors
+                for actor in actors:
+                    actor_id = Person.objects.filter(id=actor).first()
+                    if actor_id is not None:
+                        actor_movie = ActorMovie(person_id=actor_id, movie_id=movie)
+                        actor_movie.save()
+                    else:
+                        raise Exception('Actor id is invalid')
+
+            if directors is not None:
+                data['directors'] = directors
+                for director in directors:
+                    director_id = Person.objects.filter(id=director).first()
+                    if director_id is not None:
+                        director_movie = DirectorMovie(person_id=director_id, movie_id=movie)
+                        director_movie.save()
+                    else:
+                        raise Exception('Director id is invalid')
+
+            if categories is not None:
+                data['categories'] = categories
+                for category in categories:
+                    category_id = Category.objects.filter(id=category).first()
+                    if category_id is not None:
+                        category_movie = Category(category_id=category_id, movie_id=movie)
+                        category_movie.save()
+                    else:
+                        raise Exception('Category id is invalid')
             return HttpResponse(status=201)
         else:
             raise Exception(serializer.errors)

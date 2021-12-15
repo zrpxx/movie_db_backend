@@ -21,6 +21,12 @@ class Person(models.Model):
     place_birth = models.CharField(max_length=500, default='N/A')
 
 
+class Category(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=50)
+    description = models.CharField(max_length=500, default='N/A')
+
+
 class Movie(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=200)
@@ -33,6 +39,7 @@ class Movie(models.Model):
     status = models.CharField(max_length=50, default='N/A')
     budget = models.IntegerField(default=-1)
     revenue = models.IntegerField(default=-1)
+    categories = models.ManyToManyField(Category, through='MovieCategory')
     actors = models.ManyToManyField(Person, through='ActorMovie', related_name='actors')
     directors = models.ManyToManyField(Person, through='DirectorMovie', related_name='directors')
 
@@ -47,12 +54,6 @@ class Comment(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     movie_id = models.ForeignKey(Movie, on_delete=models.CASCADE)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-
-
-class Category(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=50)
-    description = models.CharField(max_length=500, default='N/A')
 
 
 class MovieCategory(models.Model):
