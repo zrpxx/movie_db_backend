@@ -5,6 +5,8 @@ from . import views
 urlpatterns = [
     path('login', views.login),
     path('register', views.register),
+    path('random_movie', views.randomMovie),
+    path('random_person', views.randomPerson)
 ]
 
 router = DefaultRouter()

@@ -1,5 +1,7 @@
 import json
+import random
 
+from django.db.models import Max
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets
@@ -7,7 +9,7 @@ from rest_framework.filters import SearchFilter
 
 from .models import Movie, Comment, User, Person, MovieCategory, Category
 from .serializers import MovieSerializer, CommentSerializer, PersonSerializer, \
-                            CategorySerializer, ActorMovie, DirectorMovie
+    CategorySerializer, ActorMovie, DirectorMovie
 
 
 class MovieViewSet(viewsets.ModelViewSet):
@@ -346,3 +348,25 @@ def register(request):
         dic['status'] = "Failed"
         dic['message'] = "User exist"
         return HttpResponse(json.dumps(dic))
+
+
+@csrf_exempt
+def randomMovie(request):
+    max_id = Movie.objects.all().aggregate(max_id=Max("id"))['max_id']
+    while True:
+        pk = random.randint(62830, max_id)
+        movie = Movie.objects.filter(pk=pk).first()
+        if movie is not None:
+            movie_serializer = MovieSerializer(movie)
+            return HttpResponse(json.dumps(movie_serializer.data))
+
+
+@csrf_exempt
+def randomPerson(request):
+    max_id = Person.objects.all().aggregate(max_id=Max("id"))['max_id']
+    while True:
+        pk = random.randint(3465784, max_id)
+        person = Person.objects.filter(pk=pk).first()
+        if person is not None:
+            person_serializer = PersonSerializer(person)
+            return HttpResponse(json.dumps(person_serializer.data))
