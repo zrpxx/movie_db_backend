@@ -39,7 +39,7 @@ class Movie(models.Model):
     status = models.CharField(max_length=50, default='N/A')
     budget = models.IntegerField(default=-1)
     revenue = models.IntegerField(default=-1)
-    categories = models.ManyToManyField(Category, through='MovieCategory')
+    categories = models.ManyToManyField(Category, through='MovieCategory', related_name='categories')
     actors = models.ManyToManyField(Person, through='ActorMovie', related_name='actors')
     directors = models.ManyToManyField(Person, through='DirectorMovie', related_name='directors')
 

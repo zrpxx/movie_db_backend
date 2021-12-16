@@ -25,8 +25,11 @@ class MovieViewSet(viewsets.ModelViewSet):
         queryset = queryset.prefetch_related('directors')
         queryset = queryset.prefetch_related('categories')
         movie_id = self.request.query_params.get('id', None)
+        movie_category_id = self.request.query_params.get('category_id', None)
         if movie_id is not None:
             queryset = queryset.filter(id=movie_id)
+        if movie_category_id is not None:
+            queryset = queryset.filter(categories__in=[movie_category_id])
         return queryset
 
     def create(self, request, *args, **kwargs):
