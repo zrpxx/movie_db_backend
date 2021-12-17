@@ -29,7 +29,6 @@ class MovieViewSet(viewsets.ModelViewSet):
         if movie_id is not None:
             queryset = queryset.filter(id=movie_id)
         if movie_category_ids is not None:
-            print(movie_category_ids)
             for movie_category_id in movie_category_ids:
                 queryset = queryset.filter(categories__id=movie_category_id)
         return queryset
@@ -145,32 +144,27 @@ class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
 
     def get_queryset(self):
+        response = {}
         queryset = Comment.objects.all()
         movie_id = self.request.query_params.get('movie_id', None)
         user_id = self.request.query_params.get('user_id', None)
-        if user_id is not None and movie_id is not None:
-            user = User.objects.filter(id=user_id).first()
-            movie = Movie.objects.filter(id=movie_id).first()
-            if user is not None and movie is not None:
-                queryset = Comment.objects.filter(user_id=user, movie_id=movie)
-            else:
-                raise Exception('User id or Movie id is invalid')
-        elif movie_id is not None:
+        if movie_id is not None:
             if movie_id is not None:
                 movie = MovieViewSet.queryset.filter(id=movie_id).first()
                 if movie is not None:
                     queryset = Comment.objects.filter(movie_id=movie)
                 else:
                     raise Exception('Movie not found')
+        if user_id is not None:
+            user = User.objects.filter(id=user_id).first()
+            if user is not None:
+                queryset = Comment.objects.filter(user_id=user)
+                commented = set()
+                for comment in queryset.all():
+                    commented.add(comment.movie_id.id)
+                response['commented_movie'] = list(commented)
             else:
-                queryset = Comment.objects.all()
-        elif user_id is not None:
-            if user_id is not None:
-                user = User.objects.filter(id=user_id).first()
-                if user is not None:
-                    queryset = Comment.objects.filter(user_id=user)
-                else:
-                    raise Exception('User not found')
+                raise Exception('User not found')
         return queryset
 
     def create(self, request, *args, **kwargs):
